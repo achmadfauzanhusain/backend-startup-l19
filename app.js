@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 
-const testRouter = require('./app/test/router');
 const authRouter = require("./app/auth/router")
 
 const app = express();
