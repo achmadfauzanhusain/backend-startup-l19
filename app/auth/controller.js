@@ -32,5 +32,18 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
         }
+    },
+    login: async(req, res) => {
+        try {
+            const { proof, publicSignals } = req.body
+
+            if(!proof || !publicSignals) {
+                return res.status(400).json({ message: 'you must generate a proof first' })
+            }
+
+            // check hasil hash address di database, apakah sama dengan publicSignals ?
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
 }
