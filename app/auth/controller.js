@@ -3,9 +3,10 @@ const snarkjs = require('snarkjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
+const { jwtKey } = require('../../config/index.js');
 
 const { colUser } = require("../../db/firebase.js")
-const { addDoc, setDoc, doc, getDocs, getDoc, query, where } = require("firebase/firestore")
+const { addDoc, setDoc, doc, getDocs, getDoc, query, where } = require("firebase/firestore");
 
 const vKey = JSON.parse(fs.readFileSync(path.join(__dirname, "../../zk/verification-key.json")))
 
@@ -61,7 +62,7 @@ module.exports = {
                 if(verified) {
                     const token = jwt.sign({
                         hash: publicSignals[0]
-                    }, "test")
+                    }, jwtKey)
                     res.status(200).json({ message: "Login Successfully!", data: token });
                 } else {
                     res.status(400).json({ message: 'Invalid proof' })
