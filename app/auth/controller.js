@@ -1,10 +1,13 @@
 const { buildPoseidon } = require('circomlibjs');
 const snarkjs = require('snarkjs');
+const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
 
 const { colUser } = require("../../db/firebase.js")
 const { addDoc, setDoc, doc, getDocs, getDoc, query, where } = require("firebase/firestore")
+
+const vKey = JSON.parse(fs.readFileSync(path.join(__dirname, "../../zk/verification-key.json")))
 
 module.exports = {
     register: async(req, res) => {
@@ -41,7 +44,29 @@ module.exports = {
                 return res.status(400).json({ message: 'you must generate a proof first' })
             }
 
-            // check hasil hash address di database, apakah sama dengan publicSignals ?
+            // check hasil hash address di database, apakah sama dengan publicSignals?
+            const hash = publicSignals[0];
+
+            const userDocRef = doc(colUser, hash);
+            const existingDoc = await getDoc(userDocRef);
+
+            if (!existingDoc.exists()) {
+                return res.status(404).json({ message: 'address not registered!' });
+            } else {
+                const verified = await snarkjs.groth16.verify(
+                    vKey,
+                    publicSignals,
+                    proof
+                )
+                if(verified) {
+                    const token = jwt.sign({
+                        hash: publicSignals[0]
+                    }, "test")
+                    res.status(200).json({ message: "Login Successfully!", data: token });
+                } else {
+                    res.status(400).json({ message: 'Invalid proof' })
+                }
+            }
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
         }
