@@ -13,8 +13,9 @@ const firebaseConfig = {
 
 }
 
-initializeApp(firebaseConfig);
-const db = getFirestore();
-const colUser = collection(db, "users");
+initializeApp(firebaseConfig)
+const db = getFirestore()
+const colUser = collection(db, "users")
+const colPost = collection(db, "posts")
 
 module.exports = { db, colUser }
