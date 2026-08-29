@@ -5,6 +5,7 @@ const logger = require('morgan');
 const cors = require('cors');
 
 const authRouter = require("./app/auth/router")
+const postRouter = require("./app/post/router")
 
 const app = express();
 app.use(cors());
@@ -16,5 +17,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/auth", authRouter)
+app.use("/post", postRouter)
 
 module.exports = app;
