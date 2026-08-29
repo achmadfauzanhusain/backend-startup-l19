@@ -30,7 +30,10 @@ module.exports = {
                 return res.status(409).json({ message: 'Hash already registered' });
             }
 
-            await setDoc(userDocRef, { hash });
+            await setDoc(userDocRef, { 
+                hash,
+                likedPosts: []
+            });
 
             res.status(200).json({ message: "Registered Successfully!", data: hash });
         } catch (error) {
