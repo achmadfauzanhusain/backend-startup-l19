@@ -6,7 +6,7 @@ const fs = require('fs');
 const { jwtKey } = require('../../config/index.js');
 
 const { colUser } = require("../../db/firebase.js")
-const { addDoc, setDoc, doc, getDocs, getDoc, query, where } = require("firebase/firestore");
+const { setDoc, doc, getDoc } = require("firebase/firestore");
 
 const vKey = JSON.parse(fs.readFileSync(path.join(__dirname, "../../zk/verification-key.json")))
 
