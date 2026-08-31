@@ -1,6 +1,5 @@
-
-const { addDoc } = require("firebase/firestore");
-const { colPost } = require("../../db/firebase.js")
+const { runTransaction, addDoc, doc } = require("firebase/firestore");
+const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
     createPost: async(req, res) => {
@@ -17,6 +16,48 @@ module.exports = {
                 likesCount: 0
             })
             res.status(201).json({ message: "successfully posted!", data: docRef.id})
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    toggleLike: async(req, res) => {
+        try {
+            const { postId } = req.params
+            const userId = req.user.id
+
+            const userRef = doc(colUser, userId)
+            const postRef = doc(colPost, postId)
+
+            const result = await runTransaction(db, async(transaction) => {
+                const userDoc = await transaction.get(userRef)
+                const likedPosts = userDoc.data().likedPosts || []
+                const alreadyLiked = likedPosts.includes(postId)
+
+                if(alreadyLiked) {
+                    transaction.update(postRef, { likesCount: increment(-1) })
+                    transaction.update(userRef, { likedPosts: arrayRemove(postId) })
+                    return "unliked"
+                } else {
+                    transaction.update(postRef, { likesCount: increment(1) })
+                    transaction.update(userRef, { likedPosts: arrayUnion(postId) })
+                    return "liked"
+                }
+            })
+            res.status(201).json({ message: result })
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    checkIsLiked: async(req, res) => {
+        try {
+            const { postId } = req.params
+            const userId = req.user.id
+
+            const userSnap = await getDoc(doc(colUser, userId))
+            const likedPosts = userSnap.data().likedPosts || []
+
+            const isLiked = likedPosts.includes(postId)
+            res.status(200).json({ isLiked })
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
         }
