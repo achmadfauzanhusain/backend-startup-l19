@@ -1,3 +1,5 @@
+
+const { addDoc } = require("firebase/firestore");
 const { colPost } = require("../../db/firebase.js")
 
 module.exports = {

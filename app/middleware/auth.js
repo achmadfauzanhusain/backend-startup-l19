@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { colUser } = require("../../db/firebase");
 const { 
-    getDocs,
-    where, query 
+    getDoc, doc
 } = require("firebase/firestore");
 const { jwtKey } = require("../../config");
 
@@ -12,23 +11,22 @@ module.exports = {
             const token = req.headers.authorization ? req.headers.authorization.replace("Bearer ", "") : null;
             const data = jwt.verify(token, jwtKey);
 
-            const q = query(colUser, where("id", "==", data.user.id));
-            const querySnapshot = await getDocs(q);
+            // data.hash, bukan data.id — sesuai payload saat sign token
+            const userDocRef = doc(colUser, data.hash);
+            const userDoc = await getDoc(userDocRef);
+            console.log(userDoc.data())
 
-            if (querySnapshot.empty) {
+            if (!userDoc.exists()) {
                 throw new Error("ur not authorized yet!");
             }
 
-            const userDoc = querySnapshot.docs[0];
-            const userData = userDoc.data();
-
-            req.user = { id: userDoc.id, ...userData };
+            req.user = { id: userDoc.id, ...userDoc.data() };
             req.token = token;
 
             next();
         } catch (err) {
             res.status(401).json({
-                error: 'Not authorized to access this'
+                message: 'Not authorized to access this'
             });
         }
     }
