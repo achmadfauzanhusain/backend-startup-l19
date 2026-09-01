@@ -1,4 +1,4 @@
-const { runTransaction, addDoc, doc } = require("firebase/firestore");
+const { runTransaction, addDoc, doc, increment, arrayUnion, arrayRemove } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -45,6 +45,7 @@ module.exports = {
             })
             res.status(201).json({ message: result })
         } catch (error) {
+            console.error(error)
             res.status(500).json({ message: 'Internal Server Error' });
         }
     },

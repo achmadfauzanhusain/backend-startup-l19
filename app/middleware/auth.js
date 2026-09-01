@@ -14,7 +14,6 @@ module.exports = {
             // data.hash, bukan data.id — sesuai payload saat sign token
             const userDocRef = doc(colUser, data.hash);
             const userDoc = await getDoc(userDocRef);
-            console.log(userDoc.data())
 
             if (!userDoc.exists()) {
                 throw new Error("ur not authorized yet!");
