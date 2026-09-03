@@ -67,7 +67,7 @@ module.exports = {
         try {
             const querySnapshot = await getDocs(colPost)
             const posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            res.status(200).json({ posts })
+            res.status(200).json({ data: posts })
         } catch (error) {
             console.error('getAllPosts error:', error)
             res.status(500).json({ message: 'Internal Server Error' })
@@ -81,7 +81,7 @@ module.exports = {
                 .filter(doc => doc.data().user === userId)
                 .map(doc => ({ id: doc.id, ...doc.data() }))
 
-            res.status(200).json({ posts: personalPosts })
+            res.status(200).json({ data: personalPosts })
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
