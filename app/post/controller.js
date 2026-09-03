@@ -72,5 +72,18 @@ module.exports = {
             console.error('getAllPosts error:', error)
             res.status(500).json({ message: 'Internal Server Error' })
         }
+    },
+    getPersonalPosts: async(req, res) => {
+        try {
+            const { userId } = req.params
+            const querySnapshot = await getDocs(colPost) // bukan colPost.get()
+            const personalPosts = querySnapshot.docs
+                .filter(doc => doc.data().user === userId)
+                .map(doc => ({ id: doc.id, ...doc.data() }))
+                
+            res.status(200).json({ posts: personalPosts })
+        } catch (error) {
+            res.status(500).json({ message: "Internal Server Error" })
+        }
     }
 }
