@@ -1,4 +1,4 @@
-const { runTransaction, addDoc, doc, increment, arrayUnion, arrayRemove } = require("firebase/firestore");
+const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -63,11 +63,14 @@ module.exports = {
             res.status(500).json({ message: 'Internal Server Error' });
         }
     },
-    getAllPosts: async(req, res) => {
+    getAllPosts: async (req, res) => {
         try {
-            
+            const querySnapshot = await getDocs(colPost) // bukan colPost.get()
+            const posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+            res.status(200).json({ posts })
         } catch (error) {
-            res.status(500).json({ message: 'Internal Server Error' });
+            console.error('getAllPosts error:', error)
+            res.status(500).json({ message: 'Internal Server Error' })
         }
     }
 }
