@@ -74,17 +74,26 @@ module.exports = {
             res.status(500).json({ message: 'Internal Server Error' })
         }
     },
-    getPersonalPosts: async(req, res) => {
+    getPersonalPosts: async (req, res) => {
         try {
-            const { userId } = req.params
-            const querySnapshot = (await getDocs(colPost)).query(orderBy("createdAt", "asc"))
-            const personalPosts = querySnapshot.docs
-                .filter(doc => doc.data().user === userId)
-                .map(doc => ({ id: doc.id, ...doc.data() }))
+            const { userId } = req.params;
 
-            res.status(200).json({ data: personalPosts })
+            const q = query(
+                colPost,
+                where("user", "==", userId),
+                orderBy("createdAt", "desc") // terbaru duluan
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            const personalPosts = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+
+            res.status(200).json({ data: personalPosts });
         } catch (error) {
-            res.status(500).json({ message: "Internal Server Error" })
+            res.status(500).json({ message: "Internal Server Error" });
         }
     }
 }
