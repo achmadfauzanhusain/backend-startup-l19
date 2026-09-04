@@ -1,4 +1,4 @@
-const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove } = require("firebase/firestore");
+const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -13,7 +13,8 @@ module.exports = {
                 user: req.user.id,
                 caption,
                 comments: [],
-                likesCount: 0
+                likesCount: 0,
+                createdAt: serverTimestamp()
             })
             res.status(201).json({ message: "successfully posted!", data: docRef.id})
         } catch (error) {
