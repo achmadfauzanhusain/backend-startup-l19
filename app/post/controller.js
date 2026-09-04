@@ -1,4 +1,4 @@
-const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp } = require("firebase/firestore");
+const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -77,7 +77,7 @@ module.exports = {
     getPersonalPosts: async(req, res) => {
         try {
             const { userId } = req.params
-            const querySnapshot = await getDocs(colPost)
+            const querySnapshot = (await getDocs(colPost)).query(orderBy("createdAt", "asc"))
             const personalPosts = querySnapshot.docs
                 .filter(doc => doc.data().user === userId)
                 .map(doc => ({ id: doc.id, ...doc.data() }))
