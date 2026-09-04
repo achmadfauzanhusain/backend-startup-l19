@@ -1,4 +1,4 @@
-const { runTransaction, where, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query } = require("firebase/firestore");
+const { runTransaction, where, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -93,6 +93,7 @@ module.exports = {
 
             res.status(200).json({ data: personalPosts });
         } catch (error) {
+            console.log(error)
             res.status(500).json({ message: "Internal Server Error" });
         }
     }
