@@ -1,4 +1,4 @@
-const { runTransaction, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query } = require("firebase/firestore");
+const { runTransaction, where, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
@@ -81,7 +81,7 @@ module.exports = {
             const q = query(
                 colPost,
                 where("user", "==", userId),
-                orderBy("createdAt", "desc") // terbaru duluan
+                orderBy("createdAt", "desc")
             );
 
             const querySnapshot = await getDocs(q);
