@@ -6,6 +6,7 @@ const cors = require('cors');
 const methodOverride = require('method-override');
 
 const authRouter = require("./app/auth/router")
+const userRouter = require("./app/user/router")
 const postRouter = require("./app/post/router")
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use("/auth", authRouter)
+app.use("/user", userRouter)
 app.use("/post", postRouter)
 
 module.exports = app;
