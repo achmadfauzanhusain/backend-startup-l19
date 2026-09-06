@@ -22,14 +22,17 @@ module.exports = {
     },
     editProfile: async(req, res) => {
         try {
-            const { displayName, bio, link1, link2, link3 } = req.body
+            const { displayName, bio, nameLink1, link1, nameLink2, link2, nameLink3, link3 } = req.body
 
             const userRef = doc(colUser, req.user.id)
             await updateDoc(userRef, { 
                 displayName: displayName ? displayName : "",
                 bio: bio ? bio : "",
+                nameLink1: nameLink1 ? nameLink1 : "",
                 link1: link1 ? link1 : "",
+                nameLink2 : nameLink2 ? nameLink2 : "",
                 link2: link2 ? link2 : "",
+                nameLink3: nameLink3 ? nameLink3 : "",
                 link3: link3 ? link3 : ""
             })
             res.status(200).json({ message: 'Profile updated successfully' })
