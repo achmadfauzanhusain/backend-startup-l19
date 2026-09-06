@@ -8,7 +8,7 @@ const methodOverride = require('method-override');
 const authRouter = require("./app/auth/router")
 const userRouter = require("./app/user/router")
 const postRouter = require("./app/post/router")
-const serverRouter = require("./app/post/router")
+const serverRouter = require("./app/server/router")
 
 const app = express();
 app.use(cors());
