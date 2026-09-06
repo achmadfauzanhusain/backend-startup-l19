@@ -1,4 +1,4 @@
-const { getDoc, doc } = require("firebase/firestore");
+const { getDoc, doc, updateDoc } = require("firebase/firestore");
 const { colUser } = require("../../db/firebase.js")
 
 module.exports = {
@@ -37,6 +37,7 @@ module.exports = {
             })
             res.status(200).json({ message: 'Profile updated successfully' })
         } catch(error) {
+            console.log(error)
             res.status(500).json({ message: 'Internal Server Error' });
         }
     }

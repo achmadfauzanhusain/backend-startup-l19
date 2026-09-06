@@ -8,6 +8,7 @@ const methodOverride = require('method-override');
 const authRouter = require("./app/auth/router")
 const userRouter = require("./app/user/router")
 const postRouter = require("./app/post/router")
+const serverRouter = require("./app/post/router")
 
 const app = express();
 app.use(cors());
@@ -22,5 +23,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/auth", authRouter)
 app.use("/user", userRouter)
 app.use("/post", postRouter)
+app.use("/server", serverRouter)
 
 module.exports = app;

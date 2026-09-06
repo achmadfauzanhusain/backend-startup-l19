@@ -17,5 +17,6 @@ initializeApp(firebaseConfig)
 const db = getFirestore()
 const colUser = collection(db, "users")
 const colPost = collection(db, "posts")
+const colServer = collection(db, "servers")
 
-module.exports = { db, colUser, colPost }
+module.exports = { db, colUser, colPost, colServer }

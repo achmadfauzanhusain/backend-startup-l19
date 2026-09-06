@@ -1,4 +1,4 @@
-const { runTransaction, where, addDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
+const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
 const { db, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
