@@ -1,5 +1,5 @@
 const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
-const { colServer, colPost } = require("../../db/firebase.js")
+const { colServer } = require("../../db/firebase.js")
 
 module.exports = {
     createServer: async(req, res) => {
@@ -35,7 +35,7 @@ module.exports = {
         try {
             const { idServer } = req.params
 
-            const docRef = doc(colPost, idServer);
+            const docRef = doc(colServer, idServer);
             const docSnap = await getDoc(docRef);
 
             if (!docSnap.exists()) {
@@ -45,6 +45,24 @@ module.exports = {
             const personalData = { id: docSnap.id, ...docSnap.data() };
 
             res.status(200).json({ data: personalData });
+        } catch (error) {
+            res.status(500).json({ message: "Internal Server Error" })
+        }
+    },
+    myServers: async(req, res) => {
+        try {
+            const q = query(
+                colServer,
+                where("owner", "==", req.user.id)
+            )
+
+            const querySnapshot = await getDocs(q)
+            const myServers = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }))
+
+            res.status(200).json({ data: myServers })
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
