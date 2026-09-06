@@ -6,7 +6,7 @@ module.exports = {
         try {
             const { hashAddress } = req.params;
 
-            const docRef = doc(colUser, hashAddress); // hashAddress = document ID
+            const docRef = doc(colUser, hashAddress);
             const docSnap = await getDoc(docRef);
 
             if (!docSnap.exists()) {
