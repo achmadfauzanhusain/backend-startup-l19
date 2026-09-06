@@ -32,7 +32,8 @@ module.exports = {
 
             await setDoc(userDocRef, { 
                 hash,
-                likedPosts: []
+                likedPosts: [],
+                servers: []
             });
 
             res.status(200).json({ message: "Registered Successfully!", data: hash });

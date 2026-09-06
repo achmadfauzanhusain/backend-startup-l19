@@ -16,7 +16,7 @@ module.exports = {
                 category,
                 owner: req.user.id,
                 createdAt: serverTimestamp(),
-                member: []
+                members: 0
             })
             res.status(201).json({ message: "successfully created!", data: docRef.id})
         } catch (error) {
