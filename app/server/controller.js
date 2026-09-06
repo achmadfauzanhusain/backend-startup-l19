@@ -17,7 +17,7 @@ module.exports = {
                 owner: req.user.id,
                 createdAt: serverTimestamp()
             })
-            res.status(201).json({ message: "successfully posted!", data: docRef.id})
+            res.status(201).json({ message: "successfully created!", data: docRef.id})
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
