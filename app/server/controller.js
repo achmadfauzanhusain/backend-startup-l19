@@ -1,5 +1,5 @@
-const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
-const { colServer } = require("../../db/firebase.js")
+const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy, documentId } = require("firebase/firestore");
+const { colServer, colUser } = require("../../db/firebase.js")
 
 module.exports = {
     createServer: async(req, res) => {
@@ -65,6 +65,37 @@ module.exports = {
 
             res.status(200).json({ data: myServers })
         } catch (error) {
+            res.status(500).json({ message: "Internal Server Error" })
+        }
+    },
+    joinedServers: async (req, res) => {
+        try {
+            const { hashAddress } = req.params
+            const docRef = doc(colUser, hashAddress)
+            const docSnap = await getDoc(docRef)
+
+            if (!docSnap.exists()) {
+                return res.status(404).json({ message: "Data not found" })
+            }
+
+            const personalData = { id: docSnap.id, ...docSnap.data() }
+            const joinedServers = personalData.servers
+
+            if (!Array.isArray(joinedServers) || joinedServers.length === 0) {
+                return res.status(200).json({ data: [] })
+            }
+
+            const q = query(
+                colServer,
+                where(documentId(), "in", joinedServers)
+            )
+
+            const snapshot = await getDocs(q)
+            const servers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+
+            res.status(200).json({ data: servers })
+        } catch (error) {
+            console.log(error)
             res.status(500).json({ message: "Internal Server Error" })
         }
     }
