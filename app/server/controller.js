@@ -1,5 +1,5 @@
 const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy, documentId } = require("firebase/firestore");
-const { colServer, colUser } = require("../../db/firebase.js")
+const { colServer, colUser, colPost } = require("../../db/firebase.js")
 
 module.exports = {
     createServer: async(req, res) => {
@@ -96,6 +96,27 @@ module.exports = {
             res.status(200).json({ data: servers })
         } catch (error) {
             console.log(error)
+            res.status(500).json({ message: "Internal Server Error" })
+        }
+    },
+    serverPost: async(req, res) => {
+        try {
+            const { idServer } = req.params
+            const { caption } = req.body
+
+            if(!caption) {
+                return res.status(400).json({ message: "u must fill in all!" })
+            }
+            const docRef = await addDoc(colPost, {
+                user: req.user.id,
+                caption,
+                comments: [],
+                likesCount: 0,
+                server: idServer,
+                createdAt: serverTimestamp()
+            })
+            res.status(201).json({ message: "successfully posted!", data: docRef.id})
+        } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
     }
