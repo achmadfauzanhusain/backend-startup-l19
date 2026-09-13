@@ -10,5 +10,6 @@ module.exports = {
     messagingSenderId: process.env.MESSAGINGSENDERID,
     appId: process.env.APPID,
     measurementId: process.env.MEASUREMENTID,
-    jwtKey: process.env.JWT_SECRET_KEY
+    jwtKey: process.env.JWT_SECRET_KEY,
+    salt: process.env.SALT
 }
