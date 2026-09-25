@@ -68,9 +68,12 @@ module.exports = {
         try {
             const querySnapshot = await getDocs(colPost)
             const posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            res.status(200).json({ data: posts })
+
+            // jika post memiliki atribut server maka jangan tampilkan!
+            const filteredPosts = posts.filter(post => !post.server)
+            
+            res.status(200).json({ data: filteredPosts })
         } catch (error) {
-            console.error('getAllPosts error:', error)
             res.status(500).json({ message: 'Internal Server Error' })
         }
     },
@@ -93,8 +96,29 @@ module.exports = {
 
             res.status(200).json({ data: personalPosts });
         } catch (error) {
-            console.log(error)
             res.status(500).json({ message: "Internal Server Error" });
+        }
+    },
+    getServerPosts: async(req, res) => {
+        try {
+            const { idServer } = req.params
+
+            const q = query(
+                colPost,
+                where("server", "==", idServer),
+                orderBy("createdAt", "desc")
+            );
+
+            const querySnapshot = await getDocs(q);
+            const serverPosts = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }))
+
+            res.status(200).json({ data: serverPosts })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ message: 'Internal Server Error' })
         }
     }
 }

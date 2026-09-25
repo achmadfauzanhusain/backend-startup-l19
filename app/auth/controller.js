@@ -3,7 +3,7 @@ const snarkjs = require('snarkjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs');
-const { jwtKey } = require('../../config/index.js');
+const { jwtKey, salt } = require('../../config/index.js');
 
 const { colUser } = require("../../db/firebase.js")
 const { setDoc, doc, getDoc } = require("firebase/firestore");
@@ -20,8 +20,13 @@ module.exports = {
             }
 
             const poseidon = await buildPoseidon();
-            const hashValue = poseidon([BigInt(address)]);
-            const hash = poseidon.F.toString(hashValue);
+            const F = poseidon.F;
+
+            const addressBigInt = BigInt(address);
+            const saltBigInt = BigInt('0x' + salt) % F.p;
+
+            const hashValue = poseidon([addressBigInt, saltBigInt]);
+            const hash = F.toString(hashValue);
 
             const userDocRef = doc(colUser, hash); // hash sbg document ID
             const existingDoc = await getDoc(userDocRef);
@@ -38,6 +43,7 @@ module.exports = {
 
             res.status(200).json({ message: "Registered Successfully!", data: hash });
         } catch (error) {
+            console.log(error)
             res.status(500).json({ message: 'Internal Server Error' });
         }
     },
