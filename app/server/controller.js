@@ -108,18 +108,27 @@ module.exports = {
                 return res.status(400).json({ message: "u must fill in all!" })
             }
 
-            // cek apakah user sudah join server ini
             const userRef = doc(colUser, req.user.id)
             const userSnap = await getDoc(userRef)
+
+            const serverRef = doc(colServer, idServer)
+            const serverSnap = await getDoc(serverRef)
+
+            if(!serverSnap) {
+                return res.status(404).json({ message: "Server not found" })
+            }
+            const serverData = serverSnap.data()
 
             if (!userSnap.exists()) {
                 return res.status(404).json({ message: "User not found" })
             }
 
+            // cek apakah user sudah join server ini
             const userData = userSnap.data()
+            console.log(userData.hash)
             const joinedServers = Array.isArray(userData.servers) ? userData.servers : []
 
-            if (!joinedServers.includes(idServer)) {
+            if (!joinedServers.includes(idServer) || serverData.owner != userData.hash) {
                 return res.status(403).json({ message: "u must join the server first!" })
             }
             
