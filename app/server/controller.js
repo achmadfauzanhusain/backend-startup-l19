@@ -99,39 +99,42 @@ module.exports = {
             res.status(500).json({ message: "Internal Server Error" })
         }
     },
-    serverPost: async(req, res) => {
+    serverPost: async (req, res) => {
         try {
             const { idServer } = req.params
             const { caption } = req.body
 
-            if(!caption) {
+            if (!caption) {
                 return res.status(400).json({ message: "u must fill in all!" })
             }
 
             const userRef = doc(colUser, req.user.id)
             const userSnap = await getDoc(userRef)
 
-            const serverRef = doc(colServer, idServer)
-            const serverSnap = await getDoc(serverRef)
-
-            if(!serverSnap) {
-                return res.status(404).json({ message: "Server not found" })
-            }
-            const serverData = serverSnap.data()
-
             if (!userSnap.exists()) {
                 return res.status(404).json({ message: "User not found" })
             }
 
-            // cek apakah user sudah join server ini
-            const userData = userSnap.data()
-            console.log(userData.hash)
-            const joinedServers = Array.isArray(userData.servers) ? userData.servers : []
+            const serverRef = doc(colServer, idServer)
+            const serverSnap = await getDoc(serverRef)
 
-            if (!joinedServers.includes(idServer) || serverData.owner != userData.hash) {
+            if (!serverSnap.exists()) {
+                return res.status(404).json({ message: "Server not found" })
+            }
+
+            const serverData = serverSnap.data()
+            const userData = userSnap.data()
+
+            // cek apakah user sudah join server ini
+            const joinedServers = Array.isArray(userData.servers) ? userData.servers : []
+            const isJoined = joinedServers.includes(idServer)
+            const isOwner = serverData.owner === userData.hash
+
+            // boleh post kalau salah satu terpenuhi (join ATAU owner)
+            if (!isJoined && !isOwner) {
                 return res.status(403).json({ message: "u must join the server first!" })
             }
-            
+
             const docRef = await addDoc(colPost, {
                 user: req.user.id,
                 caption,
@@ -140,7 +143,8 @@ module.exports = {
                 server: idServer,
                 createdAt: serverTimestamp()
             })
-            res.status(201).json({ message: "successfully posted!", data: docRef.id})
+
+            res.status(201).json({ message: "successfully posted!", data: docRef.id })
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
