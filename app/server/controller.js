@@ -148,5 +148,12 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
+    },
+    joinServer: async(req, res) => {
+        try {
+            const { idServer } = req.params
+        } catch (error) {
+            res.status(500).json({ message: "Internal Server Error" })
+        }
     }
 }
