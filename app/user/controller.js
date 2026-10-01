@@ -40,5 +40,13 @@ module.exports = {
             console.log(error)
             res.status(500).json({ message: 'Internal Server Error' });
         }
+    },
+    search: async(req, res) => {
+        try {
+            const { query } = req.query;
+            
+        } catch(error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
     }
 }
