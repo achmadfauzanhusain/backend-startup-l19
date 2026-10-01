@@ -188,5 +188,45 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error" })
         }
+    },
+    leaveServer: async(req, res) => {
+        try {
+            const { idServer } = req.params
+
+            const userRef = doc(colUser, req.user.id)
+            const userSnap = await getDoc(userRef)
+
+            if (!userSnap.exists()) {
+                return res.status(404).json({ message: "User not found" })
+            }
+
+            const serverRef = doc(colServer, idServer)
+            const serverSnap = await getDoc(serverRef)
+
+            if (!serverSnap.exists()) {
+                return res.status(404).json({ message: "Server not found" })
+            }
+            const userData = userSnap.data()
+
+            const joinedServers = Array.isArray(userData.servers) ? userData.servers : []
+            const isJoined = joinedServers.includes(idServer)
+
+            if (!isJoined) {
+                return res.status(400).json({ message: "u haven't joined this server!" })
+            }
+
+            await runTransaction(colUser.firestore, async (transaction) => {
+                transaction.update(userRef, {
+                    servers: arrayRemove(idServer)
+                })
+                transaction.update(serverRef, {
+                    members: increment(-1)
+                })
+            })
+
+            res.status(200).json({ message: "successfully left the server!" })
+        } catch(error) {
+            res.status(500).json({ message: "Internal Server Error" })
+        }
     }
 }
