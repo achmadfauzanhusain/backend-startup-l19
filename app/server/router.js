@@ -4,9 +4,9 @@ const { createServer, getAllServers, getDetailServer, myServers, joinedServers, 
 const { isLoginUser } = require('../middleware/auth');
 
 router.get("/all", getAllServers)
-router.get("/:idServer", getDetailServer)
 router.post('/create', isLoginUser, createServer)
 router.get("/my/server", isLoginUser, myServers)
+router.get("/:idServer", getDetailServer)
 router.get("/joined/:hashAddress", joinedServers)
 router.post("/:idServer/create", isLoginUser, serverPost)
 router.put("/:idServer/join", isLoginUser, joinServer)
