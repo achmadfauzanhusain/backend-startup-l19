@@ -59,7 +59,7 @@ module.exports = {
             const likedPosts = userSnap.data().likedPosts || []
 
             const isLiked = likedPosts.includes(postId)
-            res.status(200).json({ isLiked })
+            res.status(200).json({ data : isLiked })
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
         }
