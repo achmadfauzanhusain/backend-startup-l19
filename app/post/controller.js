@@ -120,5 +120,12 @@ module.exports = {
             console.log(error)
             res.status(500).json({ message: 'Internal Server Error' })
         }
+    },
+    commentPost: async(req, res) => {
+        try {
+
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' })
+        }
     }
 }
