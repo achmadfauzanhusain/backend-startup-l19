@@ -1,5 +1,5 @@
 const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
-const { db, colUser, colPost } = require("../../db/firebase.js")
+const { db, colUser, colPost, colComment } = require("../../db/firebase.js")
 
 module.exports = {
     createPost: async(req, res) => {
@@ -12,7 +12,6 @@ module.exports = {
             const docRef = await addDoc(colPost, {
                 user: req.user.id,
                 caption,
-                comments: [],
                 likesCount: 0,
                 createdAt: serverTimestamp()
             })
@@ -121,9 +120,42 @@ module.exports = {
             res.status(500).json({ message: 'Internal Server Error' })
         }
     },
+    detailPost: async(req, res) => {
+        try {
+            const { postId } = req.params
+
+            const postSnap = await getDoc(doc(colPost, postId))
+            const commentQuery = query(colComment, where("post", "==", postId), orderBy("createdAt", "desc"))
+            const commentSnap = await getDocs(commentQuery)
+            const comments = commentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+            
+            if(!postSnap.exists()) {
+                return res.status(404).json({ message: "Post not found!" })
+            }
+
+            const postData = { id: postSnap.id, ...postSnap.data(), comments }
+            res.status(200).json({ data: postData })
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' })
+        }
+    },
     commentPost: async(req, res) => {
         try {
+            const { postId } = req.params
+            const { text } = req.body
 
+            if(!text) {
+                return res.status(400).json({ message: "Text is required!" })
+            }
+
+            const commentRef = await addDoc(colComment, {
+                userId: req.user.id,
+                post: postId,
+                text,
+                createdAt: serverTimestamp()
+            })
+
+            res.status(201).json({ message: "Comment added!", data: commentRef.id })
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' })
         }

@@ -18,5 +18,6 @@ const db = getFirestore()
 const colUser = collection(db, "users")
 const colPost = collection(db, "posts")
 const colServer = collection(db, "servers")
+const colComment = collection(db, "comments")
 
-module.exports = { db, colUser, colPost, colServer }
+module.exports = { db, colUser, colPost, colServer, colComment }
