@@ -149,7 +149,7 @@ module.exports = {
             }
 
             const commentRef = await addDoc(colComment, {
-                userId: req.user.id,
+                user: req.user.id,
                 post: postId,
                 text,
                 createdAt: serverTimestamp()
