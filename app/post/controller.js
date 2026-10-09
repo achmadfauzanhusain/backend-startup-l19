@@ -1,4 +1,4 @@
-const { runTransaction, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
+const { runTransaction, deleteDoc, where, addDoc, getDoc, getDocs, doc, increment, arrayUnion, arrayRemove, serverTimestamp, query, orderBy } = require("firebase/firestore");
 const { db, colUser, colPost, colComment } = require("../../db/firebase.js")
 
 module.exports = {
@@ -17,6 +17,26 @@ module.exports = {
             })
             res.status(201).json({ message: "successfully posted!", data: docRef.id})
         } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    deletePost: async(req, res) => {
+        try {
+            const { postId } = req.params
+
+            const postSnap = await getDoc(doc(colPost, postId))
+            if(!postSnap.exists()) {
+                return res.status(404).json({ message: "Post not found!" })
+            }
+
+            if(postSnap.data().user !== req.user.id) {
+                return res.status(403).json({ message: "You are not authorized to delete this post!" })
+            }
+
+            await deleteDoc(doc(colPost, postId))
+            res.status(200).json({ message: "Post deleted successfully!" })
+        } catch (error) {
+            console.error(error)
             res.status(500).json({ message: 'Internal Server Error' });
         }
     },

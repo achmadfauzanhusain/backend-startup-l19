@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const { isLoginUser } = require("../middleware/auth")
-const { createPost, detailPost, toggleLike, checkIsLiked, getAllPosts, getPersonalPosts, getServerPosts, commentPost } = require("./controller")
+const { createPost, detailPost, toggleLike, checkIsLiked, getAllPosts, getPersonalPosts, getServerPosts, commentPost, deletePost } = require("./controller")
 
 router.get("/all", getAllPosts)
 router.post("/create", isLoginUser, createPost)
+router.delete("/:postId/delete", isLoginUser, deletePost)
 router.get("/:postId/detail", detailPost)
 router.post("/:postId/like", isLoginUser, toggleLike)
 router.get("/:postId/like/status", isLoginUser, checkIsLiked)
