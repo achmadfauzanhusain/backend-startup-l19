@@ -179,5 +179,24 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' })
         }
+    },
+    commentDelete: async(req, res) => {
+        try {
+            const { commentId } = req.params
+
+            const commentSnap = await getDoc(doc(colComment, commentId))
+            if(!commentSnap.exists()) {
+                return res.status(404).json({ message: "Comment not found!" })
+            }
+
+            if(commentSnap.data().user !== req.user.id) {
+                return res.status(403).json({ message: "You are not authorized to delete this comment!" })
+            }
+
+            await deleteDoc(doc(colComment, commentId))
+            res.status(200).json({ message: "Comment deleted successfully!" })
+        } catch (error) {
+            res.status(500).json({ message: 'Internal Server Error' })
+        }
     }
 }
