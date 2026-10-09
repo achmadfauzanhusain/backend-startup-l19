@@ -12,6 +12,6 @@ router.get("/:postId/like/status", isLoginUser, checkIsLiked)
 router.get("/:userId", getPersonalPosts)
 router.get("/server/:idServer", getServerPosts)
 router.post("/:postId/comment", isLoginUser, commentPost)
-router.delete("/:commentId/comment", isLoginUser, commentDelete)
+router.delete("/comment/:commentId/delete", isLoginUser, commentDelete)
 
 module.exports = router
