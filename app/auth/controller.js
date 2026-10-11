@@ -49,14 +49,20 @@ module.exports = {
     },
     login: async(req, res) => {
         try {
-            const { proof, publicSignals } = req.body
+            const { address } = req.body
 
-            if(!proof || !publicSignals) {
-                return res.status(400).json({ message: 'you must generate a proof first' })
+            if(!address) {
+                return res.status(400).json({ message: 'address is empty!' })
             }
 
-            // check hasil hash address di database, apakah sama dengan publicSignals?
-            const hash = publicSignals[0];
+            const poseidon = await buildPoseidon();
+            const F = poseidon.F;
+
+            const addressBigInt = BigInt(address);
+            const saltBigInt = BigInt('0x' + salt) % F.p;
+
+            const hashValue = poseidon([addressBigInt, saltBigInt]);
+            const hash = F.toString(hashValue);
 
             const userDocRef = doc(colUser, hash);
             const existingDoc = await getDoc(userDocRef);
@@ -64,19 +70,10 @@ module.exports = {
             if (!existingDoc.exists()) {
                 return res.status(404).json({ message: 'address not registered!' });
             } else {
-                const verified = await snarkjs.groth16.verify(
-                    vKey,
-                    publicSignals,
-                    proof
-                )
-                if(verified) {
-                    const token = jwt.sign({
-                        hash: publicSignals[0]
-                    }, jwtKey)
-                    res.status(200).json({ message: "Login Successfully!", data: token });
-                } else {
-                    res.status(400).json({ message: 'Invalid proof' })
-                }
+                const token = jwt.sign({
+                    hash: hash
+                }, jwtKey)
+                res.status(200).json({ message: "Login Successfully!", data: token });
             }
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
