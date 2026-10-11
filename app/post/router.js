@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { isLoginUser } = require("../middleware/auth")
-const { createPost, detailPost, toggleLike, checkIsLiked, getAllPosts, getPersonalPosts, getServerPosts, commentPost, deletePost, commentDelete } = require("./controller")
+const { createPost, detailPost, toggleLike, checkIsLiked, getAllPosts, getPersonalPosts, getServerPosts, commentPost, deletePost, commentDelete, checkManyComments } = require("./controller")
 
 router.get("/all", getAllPosts)
 router.post("/create", isLoginUser, createPost)
@@ -13,5 +13,6 @@ router.get("/:userId", getPersonalPosts)
 router.get("/server/:idServer", getServerPosts)
 router.post("/:postId/comment", isLoginUser, commentPost)
 router.delete("/comment/:commentId/delete", isLoginUser, commentDelete)
+router.get("/:postId/comment/check", isLoginUser, checkManyComments)
 
 module.exports = router

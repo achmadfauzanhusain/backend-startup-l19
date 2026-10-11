@@ -198,5 +198,14 @@ module.exports = {
         } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' })
         }
+    },
+    checkManyComments: async(req, res) => {
+        try {
+            const { postId } = req.params
+
+            
+        } catch(error) {
+            res.status(500).json({ message: 'Internal Server Error' })
+        }
     }
 }
