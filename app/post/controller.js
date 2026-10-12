@@ -203,7 +203,11 @@ module.exports = {
         try {
             const { postId } = req.params
 
+            const commentQuery = query(colComment, where("post", "==", postId))
+            const commentSnap = await getDocs(commentQuery)
+            const comments = commentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
             
+            res.status(200).json({ data: comments.length })
         } catch(error) {
             res.status(500).json({ message: 'Internal Server Error' })
         }
