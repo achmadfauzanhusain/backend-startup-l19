@@ -9,6 +9,7 @@ const authRouter = require("./app/auth/router")
 const userRouter = require("./app/user/router")
 const postRouter = require("./app/post/router")
 const serverRouter = require("./app/server/router")
+const chatRouter = require("./app/chat/router")
 
 const app = express();
 app.use(cors());
@@ -24,5 +25,6 @@ app.use("/auth", authRouter)
 app.use("/user", userRouter)
 app.use("/post", postRouter)
 app.use("/server", serverRouter)
+app.use("/chat", chatRouter)
 
 module.exports = app;

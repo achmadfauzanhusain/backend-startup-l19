@@ -19,5 +19,6 @@ const colUser = collection(db, "users")
 const colPost = collection(db, "posts")
 const colServer = collection(db, "servers")
 const colComment = collection(db, "comments")
+const colChat = collection(db, "chats")
 
-module.exports = { db, colUser, colPost, colServer, colComment }
+module.exports = { db, colUser, colPost, colServer, colComment, colChat }
