@@ -1,5 +1,22 @@
-const { getDoc, getDocs, doc, updateDoc, query, where } = require("firebase/firestore");
+const crypto = require("crypto");
+const { getDoc, getDocs, doc, updateDoc, query, where, serverTimestamp } = require("firebase/firestore");
 const { colUser, colServer, colPost } = require("../../db/firebase.js")
+
+// Validasi public key RSA (format SPKI DER dalam base64, minimal 2048-bit)
+const isValidRsaPublicKey = (b64) => {
+    try {
+        if (typeof b64 !== "string" || !/^[A-Za-z0-9+/]+={0,2}$/.test(b64)) return false;
+        const key = crypto.createPublicKey({
+            key: Buffer.from(b64, "base64"),
+            format: "der",
+            type: "spki"
+        });
+        return key.asymmetricKeyType === "rsa" &&
+            key.asymmetricKeyDetails.modulusLength >= 2048;
+    } catch {
+        return false;
+    }
+};
 
 module.exports = {
     dataUser: async(req, res) => {
@@ -38,6 +55,36 @@ module.exports = {
             res.status(200).json({ message: 'Profile updated successfully' })
         } catch(error) {
             console.log(error)
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    setPublicKey: async(req, res) => {
+        try {
+            const { publicKey } = req.body; // SPKI DER, base64
+
+            if (!isValidRsaPublicKey(publicKey)) {
+                return res.status(400).json({ message: "Invalid RSA public key (min 2048-bit, SPKI base64)" });
+            }
+
+            await updateDoc(doc(colUser, req.user.id), {
+                publicKey,
+                publicKeyUpdatedAt: serverTimestamp()
+            });
+            res.status(200).json({ message: "Public key saved" });
+        } catch(error) {
+            res.status(500).json({ message: 'Internal Server Error' });
+        }
+    },
+    getPublicKey: async(req, res) => {
+        try {
+            const { hashAddress } = req.params;
+            const snap = await getDoc(doc(colUser, hashAddress));
+
+            if (!snap.exists() || !snap.data().publicKey) {
+                return res.status(404).json({ message: "Public key not found" });
+            }
+            res.status(200).json({ data: { publicKey: snap.data().publicKey } });
+        } catch(error) {
             res.status(500).json({ message: 'Internal Server Error' });
         }
     },
